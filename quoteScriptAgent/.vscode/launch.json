@@ -17,7 +17,11 @@
                 "--port", "8000",
                 "--log-level", "info"
             ],
-            "jinja": true
+            "jinja": true,
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
         }
     ]
 }
