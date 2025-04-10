@@ -53,8 +53,8 @@ if not LLM_MODEL_NAME:
     raise ValueError("LLM_MODEL_NAME not found in environment variables.")
 
 model = LLMService(
-    model=LLM_MODEL_NAME,
-    provider=LLM_PROVIDER,
+    model_name=LLM_MODEL_NAME,
+    provider_name=LLM_PROVIDER,
     api_key=LLM_API_KEY
 )
 
@@ -62,9 +62,13 @@ model = LLMService(
 def health_check():
     return {"status": "healthy"}
 
-@app.get('/greeting')
-async def greeting():
-    return model.generate_text("List your capabilities in a friendly way.")
+@app.get('/start')
+async def start():
+    """
+    # TODO: Get video quotes types from the user
+    Start the agent and create a video.
+    """
+    return model.generate_video_metadata()
 
 @app.on_event("startup")
 def startup_event():
