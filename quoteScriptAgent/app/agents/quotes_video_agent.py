@@ -46,5 +46,7 @@ agent = create_openai_functions_agent(
 # TODO: what is the use of AgentExecuter
 agent_executor = AgentExecutor(
     agent=agent,
-    tools=tools
+    tools=tools,
+    memory=memory,
+    verbose=True,
 )

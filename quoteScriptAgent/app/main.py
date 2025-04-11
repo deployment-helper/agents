@@ -40,7 +40,7 @@ async def start():
     # TODO: Get video quotes types from the user
     Start the agent and create a video.
     """
-    return agent_executor.invoke({"input": "Create a video about motivation.","chat_history":[]})
+    return agent_executor.invoke({"input": "Create a video about motivation."})
 
 @app.on_event("startup")
 def startup_event():
