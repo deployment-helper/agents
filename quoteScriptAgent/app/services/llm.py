@@ -1,14 +1,15 @@
-from langchain.chat_models import init_chat_model
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 class LLMService:
-    def __init__(self, model_name: str, provider_name: str, api_key: str):
+    def __init__(self, provider_name: str,  model_name: str, api_key: str):
         """
         Initialize the LLMService with a specific provider and API key.
 
         :param provider: The name of the LLM provider (e.g., OpenAI, Anthropic).
         :param api_key: The API key for authenticating with the LLM provider.
         """
-        self.provider = provider_name
+        
+        self.provider_name = provider_name
         self.api_key = api_key
         self.model_name = model_name
         self.model = self._initialize_model()
@@ -19,12 +20,14 @@ class LLMService:
 
         :return: An instance of the LLM model.
         """
-        if self.provider.lower() == "openai":
-            return init_chat_model(model=self.model_name, model_provider=self.provider, api_key=self.api_key)
+        if self.provider_name.lower() == "openai":
+            return ChatOpenAI(
+                model_name=self.model_name,
+                openai_api_key=self.api_key)
         else:
-            raise ValueError(f"Unsupported provider: {self.provider}")
+            raise ValueError(f"Unsupported provider: {self.provider_name}, {self}")
 
-    def generate_video_metadata(self) -> str:        
+    def generate_video_metadata(self) -> str:
         """
         Generate video metadata including YouTube video titles, thumbnail text, 
         and quotes using the initialized LLM model.
@@ -64,4 +67,4 @@ class LLMService:
     
         
     def __repr__(self):
-        return f"LLMService(provider={self.provider}, api_key=*****)"
+        return f"LLMService(provider={self.provider_name}, api_key=*****)"

@@ -1,9 +1,8 @@
 from fastapi import FastAPI, APIRouter
 import logging
-from dotenv import load_dotenv
-import os
 
-from app.services.llm import LLMService
+from app.agents.quotes_video_agent import agent_executor
+
 app = FastAPI()
 
 # Configure logger
@@ -31,33 +30,6 @@ formatter = CustomFormatter("%(name)s - %(levelname)s: %(asctime)s -  %(message)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-# Load environment variables from .env file
-load_dotenv()
-
-
-# Load environment variables
-LLM_API_KEY = os.getenv("LLM_API_KEY")
-
-if not LLM_API_KEY:
-    logger.error("API_KEY not found in environment variables.")
-    raise ValueError("API_KEY not found in environment variables.")
-
-LLM_PROVIDER = os.getenv("LLM_PROVIDER")
-if not LLM_PROVIDER:
-    logger.error("LLM_PROVIDER not found in environment variables.")
-    raise ValueError("LLM_PROVIDER not found in environment variables.")
-
-LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME")
-if not LLM_MODEL_NAME:
-    logger.error("LLM_MODEL_NAME not found in environment variables.")
-    raise ValueError("LLM_MODEL_NAME not found in environment variables.")
-
-model = LLMService(
-    model_name=LLM_MODEL_NAME,
-    provider_name=LLM_PROVIDER,
-    api_key=LLM_API_KEY
-)
-
 @app.get('/health')
 def health_check():
     return {"status": "healthy"}
@@ -68,7 +40,7 @@ async def start():
     # TODO: Get video quotes types from the user
     Start the agent and create a video.
     """
-    return model.generate_video_metadata()
+    return agent_executor.invoke({"input": "Create a video about motivation.","chat_history":[]})
 
 @app.on_event("startup")
 def startup_event():
