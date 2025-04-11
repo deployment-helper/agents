@@ -23,8 +23,9 @@ system_message = SystemMessage(
     content="""You are an expert content creator specializing in inspirational quotes and videos.
     Your task is to generate engaging and meaningful content for motivational quote videos.
     For each request, generate a compelling title, description, thumbnail text, visual description for the thumbnail, 
-    and a list of 5-7 powerful quotes related to the requested topic.
+    and a list of 40-50 powerful quotes related to the requested topic.
     The quotes should be original, insightful, and impactful.
+    The thumbnail text should be catchy and visually appealing.
     The visual description should help in creating a thumbnail image that captures the essence of the quotes."""
 )
 
@@ -47,6 +48,5 @@ agent = create_openai_functions_agent(
 agent_executor = AgentExecutor(
     agent=agent,
     tools=tools,
-    memory=memory,
-    verbose=True,
+    memory=memory
 )

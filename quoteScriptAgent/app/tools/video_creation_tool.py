@@ -8,15 +8,17 @@ from typing import List
 class CreateVideoArgs(BaseModel):
     title: str
     desc: str
+    thumbnail_text: str
     thumbnail_visual_desc: str
     quotes: List[str]
     
-def create_video(title: str, desc: str, thumbnail_visual_desc:str, quotes: List[str]) -> str:
+def create_video(title: str, desc: str, thumbnail_text:str, thumbnail_visual_desc:str, quotes: List[str]) -> str:
     """
     Create a video with the given title, description, and quotes.
 
     :param title: The title of the video.
     :param desc: The description of the video.
+    :param thumbnail_text: The text to be displayed on the thumbnail.
     :param
     thumbnail_visual_desc: The visual description for the thumbnail.
     :param quotes: A list of quotes to include in the video.
