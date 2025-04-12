@@ -67,7 +67,7 @@ async def get_graph():
         },
         config=config,
     )
-    return "Graph invoked successfully."
+    return graph.get_state(config=config)
 
 
 @app.on_event("startup")

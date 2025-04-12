@@ -7,6 +7,7 @@ from langchain_core.messages import ToolMessage
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
+from langgraph.checkpoint.memory import MemorySaver
 
 from app.services.llm import LLMService
 from app.config import llm_config
@@ -23,6 +24,8 @@ llm_model = llm.model
 tools = [create_video_tool]
 
 llm_with_tools = llm_model.bind_tools(tools)
+
+memory = MemorySaver()
 
 
 class State(TypedDict):
@@ -109,4 +112,4 @@ graph_builder.add_edge("tools", "chatbot")
 graph_builder.add_edge(START, "chatbot")
 graph_builder.add_edge("chatbot", END)
 
-graph = graph_builder.compile()
+graph = graph_builder.compile(checkpointer=memory)
