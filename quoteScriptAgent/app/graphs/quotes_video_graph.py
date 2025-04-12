@@ -4,10 +4,11 @@ import json
 from typing_extensions import TypedDict
 
 from langchain_core.messages import ToolMessage
-
+from langchain_core.tools import tool
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.types import Command, interrupt
 
 from app.services.llm import LLMService
 from app.config import llm_config
@@ -21,7 +22,15 @@ llm = LLMService(
 
 llm_model = llm.model
 
-tools = [create_video_tool]
+
+@tool
+def human_assistance(query: str) -> str:
+    """Request assistance from a human."""
+    human_response = interrupt({"query": query})
+    return human_response["data"]
+
+
+tools = [create_video_tool, human_assistance]
 
 llm_with_tools = llm_model.bind_tools(tools)
 

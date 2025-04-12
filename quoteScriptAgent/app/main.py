@@ -4,6 +4,8 @@ import logging
 from app.agents.quotes_video_agent import agent_executor
 from app.graphs.quotes_video_graph import graph
 
+from langgraph.types import Command
+
 app = FastAPI()
 
 # Configure logger
@@ -56,17 +58,26 @@ async def get_graph():
     """
     config = {"configurable": {"thread_id": "1"}}
     print(graph.get_graph().draw_ascii())
+
     graph.invoke(
         {
             "messages": [
                 {
                     "role": "user",
-                    "content": "Create a video meta data about motivation.",
+                    "content": "I need some expert advice on how to create a video.",
                 }
             ]
         },
         config=config,
     )
+
+    human_response = (
+        "We are expert and ask to google on this topic and visit nearby library"
+    )
+
+    human_command = Command(resume={"data": human_response})
+    graph.invoke(human_command, config=config)
+
     return graph.get_state(config=config)
 
 
