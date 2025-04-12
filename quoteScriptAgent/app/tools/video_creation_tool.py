@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from typing import List
 
 
-
 # Step 1: Define a schema
 class CreateVideoArgs(BaseModel):
     title: str
@@ -11,8 +10,15 @@ class CreateVideoArgs(BaseModel):
     thumbnail_text: str
     thumbnail_visual_desc: str
     quotes: List[str]
-    
-def create_video(title: str, desc: str, thumbnail_text:str, thumbnail_visual_desc:str, quotes: List[str]) -> str:
+
+
+def create_video(
+    title: str,
+    desc: str,
+    thumbnail_text: str,
+    thumbnail_visual_desc: str,
+    quotes: List[str],
+) -> str:
     """
     Create a video with the given title, description, and quotes.
 
@@ -35,5 +41,5 @@ create_video_tool = StructuredTool.from_function(
     name="create_video",
     description="Create a video with the given title, description, and quotes.",
     args_schema=CreateVideoArgs,
-    return_type=str
+    return_type=str,
 )

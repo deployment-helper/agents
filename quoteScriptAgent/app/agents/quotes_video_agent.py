@@ -14,8 +14,8 @@ llm = LLMService(llm_config.provider,
 tools = [create_video_tool]
 
 memory = ConversationBufferMemory(
-    memory_key="chat_history", 
-    return_messages=True
+    memory_key="chat_history",
+    return_messages=True,
 )
 
 
