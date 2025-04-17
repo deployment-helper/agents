@@ -228,6 +228,24 @@ def create_description(state: State):
     return {"description": response.description}
 
 
+def create_video(state: State):
+
+    resp = create_video_tool.invoke(
+        input={
+            "title": state["best_title"],
+            "desc": state["description"],
+            "thumbnail_text": state["best_thumbnail_text"],
+            "thumbnail_visual_desc": state["thumbnail_visual_desc"],
+            "quotes": state["quotes"],
+        }
+    )
+
+    return {
+        "video_id": resp["video_id"],
+        "video_url": resp["video_url"],
+    }
+
+
 def chatbot(state: State):
     print("State:", state)
     print("Messages:", state["messages"])
@@ -265,6 +283,8 @@ graph_builder.add_node(
 graph_builder.add_node("create_quotes", create_quotes)
 graph_builder.add_node("create_thumbnail_visual_desc", create_thumbnail_visual_desc)
 graph_builder.add_node("create_description", create_description)
+graph_builder.add_node("create_video", create_video)
+
 
 graph_builder.add_edge(START, "create_titles_thumbnails_list")
 graph_builder.add_edge(
@@ -273,9 +293,10 @@ graph_builder.add_edge(
 graph_builder.add_edge("find_best_title_thumbnail_text", "create_quotes")
 graph_builder.add_edge("find_best_title_thumbnail_text", "create_thumbnail_visual_desc")
 graph_builder.add_edge("find_best_title_thumbnail_text", "create_description")
-graph_builder.add_edge("create_quotes", END)
-graph_builder.add_edge("create_thumbnail_visual_desc", END)
-graph_builder.add_edge("create_description", END)
+graph_builder.add_edge("create_quotes", "create_video")
+graph_builder.add_edge("create_thumbnail_visual_desc", "create_video")
+graph_builder.add_edge("create_description", "create_video")
+graph_builder.add_edge("create_video", END)
 
 
 graph = graph_builder.compile(checkpointer=memory)
