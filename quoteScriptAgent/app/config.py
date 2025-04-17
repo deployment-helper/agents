@@ -16,8 +16,8 @@ class LLMConfig:
 
 @dataclass(frozen=True)
 class APIConfig:
-    base_url: str = os.getenv("API_BASE_URL", "https://api.example.com")
-    api_key: str = os.getenv("API_KEY", "")
+    base_url: str = os.getenv("VIDEO_API_BASE_URL", "")
+    api_key: str = os.getenv("VIDEO_API_KEY", "")
 
 
 # Instantiate configuration objects

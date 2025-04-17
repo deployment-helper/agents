@@ -2,6 +2,8 @@ from langchain.tools import tool, StructuredTool
 from pydantic import BaseModel
 from typing import List
 
+from app.services.video_http_client import VideoHttpClient
+
 
 # Step 1: Define a schema
 class CreateVideoArgs(BaseModel):
@@ -33,7 +35,13 @@ def create_video(
     # Here you would implement the actual video creation logic
     # For now, we'll just return a success message
     print(f"Creating video with title: {title}")
-
+    VideoHttpClient.create_video(
+        title=title,
+        desc=desc,
+        thumbnail_text=thumbnail_text,
+        thumbnail_visual_desc=thumbnail_visual_desc,
+        quotes=quotes,
+    )
     return {
         "status": "success",
         "message": f"Video '{title}' created successfully with {len(quotes)} quotes.",
