@@ -5,10 +5,14 @@ from typing_extensions import TypedDict
 
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import tool
+from langchain_core.prompts import ChatPromptTemplate
+
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.types import Command, interrupt
+
+from pydantic import BaseModel
 
 from app.services.llm import LLMService
 from app.config import llm_config
@@ -37,11 +41,29 @@ llm_with_tools = llm_model.bind_tools(tools)
 memory = MemorySaver()
 
 
+class TitleAndThumbnailTextLists(BaseModel):
+    titles: list[str]
+    thumbnail_text_list: list[str]
+
+
+class BestTitleAndThumbnailText(BaseModel):
+    best_thumbnail_text: str
+    best_title: str
+
+
 class State(TypedDict):
-    # Messages have the type "list". The `add_messages` function
+    # Messages have the type "list". The `add_messages` is reducer function function
     # in the annotation defines how this state key should be updated
     # (in this case, it appends messages to the list, rather than overwriting them)
     messages: Annotated[list, add_messages]
+    topic: str
+    titles: list
+    thumbnail_text_list: list
+    best_thumbnail_text: str
+    best_title: str
+    quotes: list[str]
+    description: str
+    thumbnail_visual_desc: str
 
 
 graph_builder = StateGraph(State)
@@ -77,6 +99,62 @@ class BasicToolNode:
 tool_node = BasicToolNode(tools=tools)
 
 
+def create_titles_and_thumbnail_texts(state: State):
+    prompt_template = ChatPromptTemplate(
+        [
+            (
+                "system",
+                "you are expert youtube content creator specialized in creating quotes types of video meta data like, Generating good list of title and thumbnail text for given topics.",
+            ),
+            (
+                "user",
+                "create list of titles and a list of thumbnail texts for this  {topic}. each list should contains 10 items.",
+            ),
+        ]
+    )
+    structure_llm = llm_model.with_structured_output(TitleAndThumbnailTextLists)
+    msg = prompt_template.invoke(state).to_messages()
+    print("State:", state)
+    print("Messages:", msg)
+    response = structure_llm.invoke(msg)
+    print("Response:", response)
+
+    return {
+        "titles": response.titles,
+        "thumbnail_text_list": response.thumbnail_text_list,
+    }
+
+
+def find_best_title_and_thumbnail_text(state: State):
+    """
+    Find the best title and thumbnail text based on the given criteria.
+    """
+    prompt_template = ChatPromptTemplate(
+        [
+            (
+                "system",
+                "you are expert youtube content creator specialized in creating quotes types of video meta data like, selecting best title and thumbnail text for given list of titles and thumbnail texts for this {topic}.",
+            ),
+            (
+                "user",
+                "select best title and thumbnail text from given list of titles and thumbnail texts. \n\n **Title List:** {titles} \n\n **Thumbnail Text List:** {thumbnail_text_list}",
+            ),
+        ]
+    )
+    titles = state["titles"]
+    thumbnail_text_list = state["thumbnail_text_list"]
+    structured_llm = llm_model.with_structured_output(BestTitleAndThumbnailText)
+    msg = prompt_template.invoke(state).to_messages()
+    print("State:", state)
+    print("Messages:", msg)
+    response = structured_llm.invoke(msg)
+    print("Response:", response)
+    return {
+        "best_title": response.best_title,
+        "best_thumbnail_text": response.best_thumbnail_text,
+    }
+
+
 def chatbot(state: State):
     print("State:", state)
     print("Messages:", state["messages"])
@@ -101,24 +179,20 @@ def route_tools(
     return END
 
 
-graph_builder.add_conditional_edges(
-    "chatbot",
-    route_tools,
-    # The following dictionary lets you tell the graph to interpret the condition's outputs as a specific node
-    # It defaults to the identity function, but if you
-    # want to use a node named something else apart from "tools",
-    # You can update the value of the dictionary to something else
-    # e.g., "tools": "my_tools"
-    {"tools": "tools", END: END},
-)
-
 # The first argument is the unique node name
 # The second argument is the function or object that will be called whenever
 # the node is used.
-graph_builder.add_node("chatbot", chatbot)
-graph_builder.add_node("tools", tool_node)
-graph_builder.add_edge("tools", "chatbot")
-graph_builder.add_edge(START, "chatbot")
-graph_builder.add_edge("chatbot", END)
+graph_builder.add_node(
+    "create_titles_thumbnails_list", create_titles_and_thumbnail_texts
+)
+graph_builder.add_node(
+    "find_best_title_thumbnail_text", find_best_title_and_thumbnail_text
+)
+graph_builder.add_edge(START, "create_titles_thumbnails_list")
+graph_builder.add_edge(
+    "create_titles_thumbnails_list", "find_best_title_thumbnail_text"
+)
+graph_builder.add_edge("find_best_title_thumbnail_text", END)
 
 graph = graph_builder.compile(checkpointer=memory)
+print(graph.get_graph().draw_ascii())

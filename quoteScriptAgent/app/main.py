@@ -57,27 +57,13 @@ async def get_graph():
     Get the graph of the agent.
     """
     config = {"configurable": {"thread_id": "1"}}
-    print(graph.get_graph().draw_ascii())
 
     graph.invoke(
         {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": "I need some expert advice on how to create a video.",
-                }
-            ]
+            "topic": "Happiness",
         },
         config=config,
     )
-
-    human_response = (
-        "We are expert and ask to google on this topic and visit nearby library"
-    )
-
-    human_command = Command(resume={"data": human_response})
-    graph.invoke(human_command, config=config)
-
     return graph.get_state(config=config)
 
 
