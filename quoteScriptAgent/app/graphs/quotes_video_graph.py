@@ -51,6 +51,18 @@ class BestTitleAndThumbnailText(BaseModel):
     best_title: str
 
 
+class Quotes(BaseModel):
+    quotes: list[str]
+
+
+class ThumbnailVisualDesc(BaseModel):
+    thumbnail_visual_desc: str
+
+
+class Description(BaseModel):
+    description: str
+
+
 class State(TypedDict):
     # Messages have the type "list". The `add_messages` is reducer function function
     # in the annotation defines how this state key should be updated
@@ -64,6 +76,8 @@ class State(TypedDict):
     quotes: list[str]
     description: str
     thumbnail_visual_desc: str
+    video_id: str
+    video_url: str
 
 
 graph_builder = StateGraph(State)
@@ -104,7 +118,7 @@ def create_titles_and_thumbnail_texts(state: State):
         [
             (
                 "system",
-                "you are expert youtube content creator specialized in creating quotes types of video meta data like, Generating good list of title and thumbnail text for given topics.",
+                "you are expert youtube content creator specialized in creating quotes types of video data like, Generating good list of title and thumbnail text for given topics.",
             ),
             (
                 "user",
@@ -114,10 +128,7 @@ def create_titles_and_thumbnail_texts(state: State):
     )
     structure_llm = llm_model.with_structured_output(TitleAndThumbnailTextLists)
     msg = prompt_template.invoke(state).to_messages()
-    print("State:", state)
-    print("Messages:", msg)
     response = structure_llm.invoke(msg)
-    print("Response:", response)
 
     return {
         "titles": response.titles,
@@ -133,7 +144,7 @@ def find_best_title_and_thumbnail_text(state: State):
         [
             (
                 "system",
-                "you are expert youtube content creator specialized in creating quotes types of video meta data like, selecting best title and thumbnail text for given list of titles and thumbnail texts for this {topic}.",
+                "you are expert youtube content creator specialized in creating quotes types of video data like, selecting best title and thumbnail text for given list of titles and thumbnail texts for this {topic}.",
             ),
             (
                 "user",
@@ -141,18 +152,80 @@ def find_best_title_and_thumbnail_text(state: State):
             ),
         ]
     )
-    titles = state["titles"]
-    thumbnail_text_list = state["thumbnail_text_list"]
+
     structured_llm = llm_model.with_structured_output(BestTitleAndThumbnailText)
     msg = prompt_template.invoke(state).to_messages()
-    print("State:", state)
-    print("Messages:", msg)
     response = structured_llm.invoke(msg)
-    print("Response:", response)
     return {
         "best_title": response.best_title,
         "best_thumbnail_text": response.best_thumbnail_text,
     }
+
+
+def create_quotes(state: State):
+    """
+    Create a list of quotes based on the given topic.
+    """
+    prompt_template = ChatPromptTemplate(
+        [
+            (
+                "system",
+                "you are expert youtube content creator specialized in creating quotes types of video data like, generating good list of quotes for given title and thumbnail text for this {topic}.",
+            ),
+            (
+                "user",
+                "create a list of 40-50 quotes for this **Title:** {best_title} and **Thumbnail_text:** {best_thumbnail_text}.",
+            ),
+        ]
+    )
+    structured_llm = llm_model.with_structured_output(Quotes)
+    msg = prompt_template.invoke(state).to_messages()
+    response = structured_llm.invoke(msg)
+    return {"quotes": response.quotes}
+
+
+def create_thumbnail_visual_desc(state: State):
+    """
+    Create a visual description for the thumbnail based on the given topic.
+    """
+    prompt_template = ChatPromptTemplate(
+        [
+            (
+                "system",
+                "you are expert youtube content creator specialized in creating thumbnail image description to create a thumbnail image for given title and thumbnail text for this {topic}.",
+            ),
+            (
+                "user",
+                "create a image description for the thumbnail image for this **Title:** {best_title} and **Thumbnail_text:** {best_thumbnail_text}. Write thumbnail_text on top of the image.",
+            ),
+        ]
+    )
+    structured_llm = llm_model.with_structured_output(ThumbnailVisualDesc)
+    msg = prompt_template.invoke(state).to_messages()
+    response = structured_llm.invoke(msg)
+    return {"thumbnail_visual_desc": response.thumbnail_visual_desc}
+
+
+def create_description(state: State):
+    """
+    Create a description for the video based on the given topic.
+    """
+    prompt_template = ChatPromptTemplate(
+        [
+            (
+                "system",
+                "you are expert youtube content creator specialized in creating description for given title and thumbnail text for this *{topic}* topic.",
+            ),
+            (
+                "user",
+                "create a description for the youtube video for this **Title: {best_title} ** and **Thumbnail_text: {best_thumbnail_text}**.",
+            ),
+        ]
+    )
+    structured_llm = llm_model.with_structured_output(Description)
+    msg = prompt_template.invoke(state).to_messages()
+    response = structured_llm.invoke(msg)
+    return {"description": response.description}
 
 
 def chatbot(state: State):
@@ -188,11 +261,22 @@ graph_builder.add_node(
 graph_builder.add_node(
     "find_best_title_thumbnail_text", find_best_title_and_thumbnail_text
 )
+
+graph_builder.add_node("create_quotes", create_quotes)
+graph_builder.add_node("create_thumbnail_visual_desc", create_thumbnail_visual_desc)
+graph_builder.add_node("create_description", create_description)
+
 graph_builder.add_edge(START, "create_titles_thumbnails_list")
 graph_builder.add_edge(
     "create_titles_thumbnails_list", "find_best_title_thumbnail_text"
 )
-graph_builder.add_edge("find_best_title_thumbnail_text", END)
+graph_builder.add_edge("find_best_title_thumbnail_text", "create_quotes")
+graph_builder.add_edge("find_best_title_thumbnail_text", "create_thumbnail_visual_desc")
+graph_builder.add_edge("find_best_title_thumbnail_text", "create_description")
+graph_builder.add_edge("create_quotes", END)
+graph_builder.add_edge("create_thumbnail_visual_desc", END)
+graph_builder.add_edge("create_description", END)
+
 
 graph = graph_builder.compile(checkpointer=memory)
 print(graph.get_graph().draw_ascii())
