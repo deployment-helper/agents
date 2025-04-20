@@ -27,27 +27,15 @@ class VideoHttpClient:
             "projectName": "Quotes",
             "name": title,
             "description": desc,
+            "sceneDescriptions": quotes,
             "properties": "",
             "audioLanguage": "en-US",
             "voiceCode": "en-US-Studio-Q",
             "backgroundMusic": "https://vm-presentations.s3.ap-south-1.amazonaws.com/public/background-music/uplifting-pad-texture-113842.mp3",
         }
-        response = client.post(f"videos?key={api_config.api_key}", payload)
-        print(f"Video creation response: {response}")
-        video_id = response.get("id")
-        scene_id = response.get("sceneId")
-
-        if not video_id:
-            raise ValueError("Failed to create video: video_id not found in response")
-
-        scenes_payload = {"video_id": video_id, "scene_id": "default_scene"}
-        scenes_response = client.post(
-            f"videos/{video_id}/scenes/{scene_id}/?key={api_config.api_key}",
-            scenes_payload,
-        )
-        print(f"Scenes creation response: {scenes_response}")
-
+        response = client.post(f"/videos/create-with-scenes?key={api_config.api_key}", payload)
+        
         return {
-            "video_response": response,
-            "scenes_response": scenes_response,
+            "video_id": response["id"],
+            "video_url": f"https://example.com/video/{response['id']}",
         }

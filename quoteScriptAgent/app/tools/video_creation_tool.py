@@ -35,7 +35,7 @@ def create_video(
     # Here you would implement the actual video creation logic
     # For now, we'll just return a success message
     print(f"Creating video with title: {title}")
-    VideoHttpClient.create_video(
+    resp = VideoHttpClient.create_video(
         title=title,
         desc=desc,
         thumbnail_text=thumbnail_text,
@@ -45,8 +45,8 @@ def create_video(
     return {
         "status": "success",
         "message": f"Video '{title}' created successfully with {len(quotes)} quotes.",
-        "video_id": "12345",
-        "video_url": "https://example.com/video/12345",
+        "video_id": resp["video_id"],
+        "video_url": resp["video_url"]
     }
 
 
