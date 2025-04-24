@@ -5,6 +5,7 @@ from app.agents.quotes_video_agent import agent_executor
 from app.graphs.quotes_video_graph import graph
 
 from langgraph.types import Command
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -42,17 +43,11 @@ def health_check():
     return {"status": "healthy"}
 
 
-@app.get("/start")
-async def start():
-    """
-    # TODO: Get video quotes types from the user
-    Start the agent and create a video.
-    """
-    return agent_executor.invoke({"input": "Create a video about motivation."})
+class GraphRequest(BaseModel):
+    topic: str
 
-
-@app.get("/graph")
-async def get_graph():
+@app.post("/graph")
+async def get_graph(request: GraphRequest):
     """
     Get the graph of the agent.
     """
@@ -60,7 +55,7 @@ async def get_graph():
 
     graph.invoke(
         {
-            "topic": "Happiness",
+            "topic": request.topic,
         },
         config=config,
     )
