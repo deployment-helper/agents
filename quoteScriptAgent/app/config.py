@@ -18,6 +18,7 @@ class LLMConfig:
 class APIConfig:
     base_url: str = os.getenv("VIDEO_API_BASE_URL", "")
     api_key: str = os.getenv("VIDEO_API_KEY", "")
+    server_api_key: str = os.getenv("SERVER_API_KEY", "default_secret_key")
 
 
 # Instantiate configuration objects
