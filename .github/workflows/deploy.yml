@@ -9,7 +9,7 @@ env:
   PROJECT_ID: chat-gpt-videos # TODO: Replace with your GCP Project ID
   PROJECT_NUMBER: 587820759295 # TODO: Replace with your GCP Project Number
   GAR_LOCATION: asia-south1 # TODO: Replace with your Artifact Registry region (e.g., us-central1)
-  GAR_REPOSITORY: agents # TODO: Replace with your Artifact Registry repo name
+  GAR_REPOSITORY: app-management # TODO: Replace with your Artifact Registry repo name
   SERVICE_NAME: ai-agents # Cloud Run service name
   REGION: asia-south1 # TODO: Replace with your Cloud Run service region
 
