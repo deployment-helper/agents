@@ -21,6 +21,7 @@ from pydantic import BaseModel
 from app.services.llm import LLMService
 from app.config import llm_config
 from app.tools.video_creation_tool import create_video_tool
+from app.services.prompts import Prompts # Import the Prompts class
 
 logger = logging.getLogger(__name__) # Initialize logger for this module
 
@@ -126,18 +127,7 @@ tool_node = BasicToolNode(tools=tools)
 
 
 def create_titles_and_thumbnail_texts(state: State):
-    prompt_template = ChatPromptTemplate(
-        [
-            (
-                "system",
-                "you are expert youtube content creator specialized in creating quotes types of video data like, Generating good list of title and thumbnail text for given topics.",
-            ),
-            (
-                "user",
-                "create list of titles and a list of thumbnail texts for this  {topic}. each list should contains 10 items.",
-            ),
-        ]
-    )
+    prompt_template = Prompts.create_titles_thumbnails_prompt()
     structure_llm = llm_model.with_structured_output(TitleAndThumbnailTextLists)
     msg = prompt_template.invoke(state).to_messages()
     response = structure_llm.invoke(msg)
@@ -152,18 +142,7 @@ def find_best_title_and_thumbnail_text(state: State):
     """
     Find the best title and thumbnail text based on the given criteria.
     """
-    prompt_template = ChatPromptTemplate(
-        [
-            (
-                "system",
-                "you are expert youtube content creator specialized in creating quotes types of video data like, selecting best title and thumbnail text for given list of titles and thumbnail texts for this {topic}.",
-            ),
-            (
-                "user",
-                "select best title and thumbnail text from given list of titles and thumbnail texts. \n\n **Title List:** {titles} \n\n **Thumbnail Text List:** {thumbnail_text_list}",
-            ),
-        ]
-    )
+    prompt_template = Prompts.find_best_title_thumbnail_prompt()
 
     structured_llm = llm_model.with_structured_output(BestTitleAndThumbnailText)
     msg = prompt_template.invoke(state).to_messages()
@@ -178,18 +157,7 @@ def create_quotes(state: State):
     """
     Create a list of quotes based on the given topic.
     """
-    prompt_template = ChatPromptTemplate(
-        [
-            (
-                "system",
-                "you are expert youtube content creator specialized in creating quotes types of video data like, generating good list of quotes for given title and thumbnail text for this {topic}.",
-            ),
-            (
-                "user",
-                "create a list of 40-50 quotes for this **Title:** {best_title} and **Thumbnail_text:** {best_thumbnail_text}.",
-            ),
-        ]
-    )
+    prompt_template = Prompts.create_quotes_prompt()
     structured_llm = llm_model.with_structured_output(Quotes)
     msg = prompt_template.invoke(state).to_messages()
     response = structured_llm.invoke(msg)
@@ -200,18 +168,7 @@ def create_thumbnail_visual_desc(state: State):
     """
     Create a visual description for the thumbnail based on the given topic.
     """
-    prompt_template = ChatPromptTemplate(
-        [
-            (
-                "system",
-                "you are expert youtube content creator specialized in creating thumbnail image description to create a thumbnail image for given title and thumbnail text for this {topic}.",
-            ),
-            (
-                "user",
-                "create a image description for the thumbnail image for this **Title:** {best_title} and **Thumbnail_text:** {best_thumbnail_text}. Write thumbnail_text on top of the image.",
-            ),
-        ]
-    )
+    prompt_template = Prompts.create_thumbnail_visual_desc_prompt()
     structured_llm = llm_model.with_structured_output(ThumbnailVisualDesc)
     msg = prompt_template.invoke(state).to_messages()
     response = structured_llm.invoke(msg)
@@ -287,18 +244,7 @@ def create_description(state: State):
     """
     Create a description for the video based on the given topic.
     """
-    prompt_template = ChatPromptTemplate(
-        [
-            (
-                "system",
-                "you are expert youtube content creator specialized in creating description for given title and thumbnail text for this *{topic}* topic.",
-            ),
-            (
-                "user",
-                "create a description for the youtube video for this **Title: {best_title} ** and **Thumbnail_text: {best_thumbnail_text}**.",
-            ),
-        ]
-    )
+    prompt_template = Prompts.create_description_prompt()
     structured_llm = llm_model.with_structured_output(Description)
     msg = prompt_template.invoke(state).to_messages()
     response = structured_llm.invoke(msg)
