@@ -9,7 +9,7 @@ env:
   PROJECT_ID: chat-gpt-videos # TODO: Replace with your GCP Project ID
   PROJECT_NUMBER: 587820759295 # TODO: Replace with your GCP Project Number
   GAR_LOCATION: asia-south1 # TODO: Replace with your Artifact Registry region (e.g., us-central1)
-  GAR_REPOSITORY: app-management # TODO: Replace with your Artifact Registry repo name
+  GAR_REPOSITORY: agents # TODO: Replace with your Artifact Registry repo name
   SERVICE_NAME: ai-agents # Cloud Run service name
   REGION: asia-south1 # TODO: Replace with your Cloud Run service region
 
@@ -25,19 +25,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Authenticate to Google Cloud using Workload Identity Federation
-      # Configure WIF in your GCP project first:
-      # https://cloud.google.com/iam/docs/workload-identity-federation-with-github-actions
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v2"
+      # Authenticate to Google Cloud using Service Account Key
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2 # Using v2 as it's the latest stable version
         with:
-          workload_identity_provider: "projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/pool1/providers/github" # TODO: Replace with your WIF details
-          service_account: "github-action@chat-gpt-videos.iam.gserviceaccount.com" # TODO: Replace with your Service account email
-
-      # Setup gcloud CLI
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }} # Assuming the secret is named GCP_SA_KEY
+          export_default_credentials: true
 
       # Configure Docker to use the gcloud command-line tool as a credential helper
       - name: Configure Docker
