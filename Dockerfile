@@ -18,7 +18,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code into the container
 COPY ./app ./app
-COPY ./example.env ./.env # Copy example.env, will be overridden by Cloud Run env vars/secrets
 
 # Expose the port the app runs on
 EXPOSE 8000
