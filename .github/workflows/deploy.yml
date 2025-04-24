@@ -2,6 +2,9 @@
 name: Build and Deploy to Cloud Run
 
 on:
+  push:
+    branches:
+      - main # Trigger deployment on push to main branch
   release:
     types: [published] # Trigger deployment ONLY when a release is published
 
@@ -27,7 +30,7 @@ jobs:
 
       # Authenticate to Google Cloud using Service Account Key
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2 # Using v2 as it's the latest stable version
+        uses: google-github-actions/setup-gcloud@v0.2.1 # Using v2 as it's the latest stable version
         with:
           project_id: ${{ env.PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }} # Assuming the secret is named GCP_SA_KEY
