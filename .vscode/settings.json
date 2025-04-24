@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
         "checkpointer"
-    ]
+    ],
+    "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python"
 }
