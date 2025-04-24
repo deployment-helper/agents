@@ -12,6 +12,7 @@ class CreateVideoArgs(BaseModel):
     thumbnail_text: str
     thumbnail_visual_desc: str
     quotes: List[str]
+    project_id: str # Add project_id field
 
 
 def create_video(
@@ -20,6 +21,7 @@ def create_video(
     thumbnail_text: str,
     thumbnail_visual_desc: str,
     quotes: List[str],
+    project_id: str, # Add project_id parameter
 ) -> str:
     """
     Create a video with the given title, description, and quotes.
@@ -30,17 +32,19 @@ def create_video(
     :param
     thumbnail_visual_desc: The visual description for the thumbnail.
     :param quotes: A list of quotes to include in the video.
+    :param project_id: The ID of the project for video creation.
     :return: A string indicating success or failure.
     """
     # Here you would implement the actual video creation logic
     # For now, we'll just return a success message
-    print(f"Creating video with title: {title}")
+    print(f"Creating video with title: {title} for project: {project_id}")
     resp = VideoHttpClient.create_video(
         title=title,
         desc=desc,
         thumbnail_text=thumbnail_text,
         thumbnail_visual_desc=thumbnail_visual_desc,
         quotes=quotes,
+        project_id=project_id, # Pass project_id
     )
     return {
         "status": "success",

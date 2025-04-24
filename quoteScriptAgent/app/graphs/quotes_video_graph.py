@@ -79,6 +79,7 @@ class State(TypedDict):
     # (in this case, it appends messages to the list, rather than overwriting them)
     messages: Annotated[list, add_messages]
     topic: str
+    project_id: str # Add project_id field
     titles: list
     thumbnail_text_list: list
     best_thumbnail_text: str
@@ -314,6 +315,7 @@ def create_video(state: State):
         "best_thumbnail_text",
         "thumbnail_visual_desc",
         "quotes",
+        "project_id", # Add project_id to required keys
     ]
     missing_keys = [key for key in required_keys if not state.get(key)]
 
@@ -334,6 +336,7 @@ def create_video(state: State):
             "thumbnail_text": state["best_thumbnail_text"],
             "thumbnail_visual_desc": state["thumbnail_visual_desc"],
             "quotes": state["quotes"],
+            "project_id": state["project_id"], # Pass project_id
         }
     )
 

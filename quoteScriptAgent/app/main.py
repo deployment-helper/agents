@@ -66,6 +66,7 @@ def health_check():
 
 class GraphRequest(BaseModel):
     topic: str
+    project_id: str # Add project_id field
 
 @app.post("/graph", dependencies=[Depends(verify_api_key)]) # Add dependency here
 async def get_graph(request: GraphRequest):
@@ -74,9 +75,11 @@ async def get_graph(request: GraphRequest):
     """
     config = {"configurable": {"thread_id": "1"}}
 
+    # Pass project_id along with topic
     graph.invoke(
         {
             "topic": request.topic,
+            "project_id": request.project_id,
         },
         config=config,
     )
