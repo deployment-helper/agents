@@ -22,6 +22,7 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             },
+            "python": "${workspaceFolder}/venv/bin/python" // Specify the Python interpreter from the virtual environment
         }
     ]
 }
