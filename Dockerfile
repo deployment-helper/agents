@@ -20,8 +20,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ./app ./app
 
 # Expose the port the app runs on
-EXPOSE 8000
+# Expose the port specified in the PORT environment variable, default to 8000
+# The EXPOSE instruction informs Docker that the container listens on the specified 
+# network port at runtime. In this case, it exposes the port defined by the environment 
+# variable PORT, defaulting to 8000 if PORT is not set. This does not publish the port 
+# to the host automatically; it serves as metadata for the container and is used in 
+# conjunction with the `-p` or `--publish` flag when running the container to map the 
+# container's port to a port on the host machine.
+EXPOSE ${PORT:-8000}
 
 # Define the command to run the application
 # Use 0.0.0.0 to make it accessible from outside the container
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
