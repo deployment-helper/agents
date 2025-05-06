@@ -28,6 +28,7 @@ class VideoHttpClient:
             "projectId": project_id, # Use the passed project_id
             "name": title,
             "description": desc,
+            "visualPrompt": thumbnail_visual_desc,  # Rename to visual_prompt for the API
             "sceneDescriptions": quotes,
         }
         response = client.post(f"/videos/create-with-scenes?key={api_config.api_key}", payload)

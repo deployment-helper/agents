@@ -280,7 +280,7 @@ def create_video(state: State):
             "title": state["best_title"],
             "desc": state["description"],
             "thumbnail_text": state["best_thumbnail_text"],
-            "thumbnail_visual_desc": state["thumbnail_visual_desc"],
+            "thumbnail_visual_desc": state["thumbnail_visual_desc"],  # We keep this parameter name for tool compatibility
             "quotes": state["quotes"],
             "project_id": state["project_id"], # Pass project_id
         }
