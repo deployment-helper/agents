@@ -2,9 +2,6 @@
 name: Build and Deploy to Cloud Run
 
 on:
-  push:
-    branches:
-      - main # Trigger deployment on push to main branch
   release:
     types: [published] # Trigger deployment ONLY when a release is published
 
