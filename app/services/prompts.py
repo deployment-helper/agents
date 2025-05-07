@@ -69,11 +69,11 @@ class Prompts:
             [
                 (
                     "system",
-                    "you are expert youtube content creator specialized in creating thumbnail image description to create a thumbnail image for given title and thumbnail text for this {topic}.",
+                    "you are expert youtube content creator specialized in creating thumbnail image visual description  to create a thumbnail image for given title and thumbnail text for this {topic} and you also have specialization in creating midjourney prompt.",
                 ),
                 (
                     "user",
-                    "create a image description for the thumbnail image for this **Title:** {best_title} and **Thumbnail_text:** {best_thumbnail_text}. Write thumbnail_text on top of the image.",
+                    "create a image description for the thumbnail image for this **Title:** {best_title} and **Thumbnail_text:** {best_thumbnail_text}. Write thumbnail_text on top of the image. This prompt should be midjourney prompt with 16:9 aspect ratio and text should be best fitted in the image.",
                 ),
             ]
         )

@@ -1,13 +1,17 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
 import logging
+
+from langgraph.types import Command
+from pydantic import BaseModel
 
 from app.agents.quotes_video_agent import agent_executor
 from app.graphs.quotes_video_graph import graph
 from app.config import api_config  # Import api_config
+from app.services.topics import get_random_topic
 
-from langgraph.types import Command
-from pydantic import BaseModel
+
 
 app = FastAPI()
 
@@ -65,8 +69,8 @@ def health_check():
 
 
 class GraphRequest(BaseModel):
-    topic: str
-    project_id: str # Add project_id field
+    topic: str = None  # Make topic optional
+    project_id: str  # Add project_id field
 
 @app.post("/graph", dependencies=[Depends(verify_api_key)]) # Add dependency here
 async def get_graph(request: GraphRequest):
@@ -78,7 +82,8 @@ async def get_graph(request: GraphRequest):
     # Pass project_id along with topic
     graph.invoke(
         {
-            "topic": request.topic,
+            # Use the provided topic if available, otherwise pick a random one
+            "topic": request.topic if request.topic else get_random_topic(),
             "project_id": request.project_id,
         },
         config=config,
