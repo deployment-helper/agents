@@ -55,28 +55,14 @@ jobs:
           if custom_project_id:
               project_id = custom_project_id
               print(f"Using provided custom project ID: {project_id}")
-          elif env_project_id:
-              from datetime import datetime
-              timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-              project_id = f"{env_project_id}_{timestamp}"
-              print(f"Using environment project ID with timestamp: {project_id}")
-          else:
-              from datetime import datetime
-              timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-              project_id = f"scheduled_{timestamp}"
-              print(f"Using default project ID: {project_id}")
+          else env_project_id:
+              project_id = env_project_id
+              print(f"Using environment project ID: {project_id}")          
 
-          # Define topics (using some from your existing list)
-          topics = ["Artificial Intelligence", "Machine Learning", "Data Science", 
-                    "Personal Development", "Leadership", "Entrepreneurship",
-                    "Productivity", "Time Management", "Work-Life Balance"]
 
-          # Randomly select a topic
-          selected_topic = random.choice(topics)
 
           # Create the request payload
           payload = {
-              "topic": selected_topic,
               "project_id": project_id
           }
 
