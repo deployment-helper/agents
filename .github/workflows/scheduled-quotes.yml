@@ -1,0 +1,105 @@
+name: Scheduled Quote Video Generation
+
+on:
+  schedule:
+    # Run at 6:00 AM and 6:00 PM UTC daily
+    - cron: "0 6,18 * * *"
+  # Allow manual triggering of the workflow
+  workflow_dispatch:
+    inputs:
+      custom_project_id:
+        description: "Custom project ID (optional)"
+        required: false
+        type: string
+
+env:
+  PROJECT_ID: ${{ vars.QUOTES_PROJECT_ID }}
+  GAR_LOCATION: asia-south1
+  SERVICE_URL: ${{ vars.AGENTS_END_POINT }}
+
+jobs:
+  generate-video:
+    name: Generate Quote Video
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Generate quote video
+        run: |
+          python -c '
+          import requests
+          import json
+          import os
+          import random
+
+          # Get Server API Key from GitHub secrets
+          api_key = os.environ.get("SERVER_API_KEY")
+          service_url = os.environ.get("SERVICE_URL")
+
+          # Check for custom project ID from input, fallback to env PROJECT_ID or generate one
+          custom_project_id = os.environ.get("CUSTOM_PROJECT_ID")
+          env_project_id = os.environ.get("PROJECT_ID")
+
+          if custom_project_id:
+              project_id = custom_project_id
+              print(f"Using provided custom project ID: {project_id}")
+          elif env_project_id:
+              from datetime import datetime
+              timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+              project_id = f"{env_project_id}_{timestamp}"
+              print(f"Using environment project ID with timestamp: {project_id}")
+          else:
+              from datetime import datetime
+              timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+              project_id = f"scheduled_{timestamp}"
+              print(f"Using default project ID: {project_id}")
+
+          # Define topics (using some from your existing list)
+          topics = ["Artificial Intelligence", "Machine Learning", "Data Science", 
+                    "Personal Development", "Leadership", "Entrepreneurship",
+                    "Productivity", "Time Management", "Work-Life Balance"]
+
+          # Randomly select a topic
+          selected_topic = random.choice(topics)
+
+          # Create the request payload
+          payload = {
+              "topic": selected_topic,
+              "project_id": project_id
+          }
+
+          # Set headers with authorization
+          headers = {
+              "Authorization": f"Bearer {api_key}",
+              "Content-Type": "application/json"
+          }
+
+          # Make the API call
+          try:
+              response = requests.post(f"{service_url}/graph", json=payload, headers=headers)
+              response.raise_for_status()
+              print(f"Video generation initiated successfully!")
+              print(f"Topic: {selected_topic}")
+              print(f"Project ID: {project_id}")
+              print(f"Response: {response.json()}")
+          except Exception as e:
+              print(f"Error generating video: {e}")
+              exit(1)
+          '
+        env:
+          SERVER_API_KEY: ${{ secrets.SERVER_API_KEY }}
+          SERVICE_URL: ${{ env.SERVICE_URL }}
+          PROJECT_ID: ${{ env.PROJECT_ID }}
+          CUSTOM_PROJECT_ID: ${{ github.event.inputs.custom_project_id }}
