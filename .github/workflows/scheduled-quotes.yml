@@ -55,11 +55,9 @@ jobs:
           if custom_project_id:
               project_id = custom_project_id
               print(f"Using provided custom project ID: {project_id}")
-          else env_project_id:
+          elif env_project_id:
               project_id = env_project_id
               print(f"Using environment project ID: {project_id}")          
-
-
 
           # Create the request payload
           payload = {
@@ -77,7 +75,6 @@ jobs:
               response = requests.post(f"{service_url}/graph", json=payload, headers=headers)
               response.raise_for_status()
               print(f"Video generation initiated successfully!")
-              print(f"Topic: {selected_topic}")
               print(f"Project ID: {project_id}")
               print(f"Response: {response.json()}")
           except Exception as e:
