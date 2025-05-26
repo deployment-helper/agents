@@ -44,6 +44,13 @@ formatter = CustomFormatter("%(name)s - %(levelname)s: %(asctime)s -  %(message)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+# Configure root logger to ensure all module loggers have handlers
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.INFO)
+root_handler = logging.StreamHandler()
+root_handler.setFormatter(formatter)
+root_logger.addHandler(root_handler)
+
 # Security scheme
 security = HTTPBearer()
 
