@@ -7,3 +7,8 @@ python-dotenv
 langchain-openai
 langgraph
 grandalf
+boto3
+pytesseract
+pdf2image
+pillow
+requests

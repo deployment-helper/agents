@@ -21,6 +21,19 @@ class APIConfig:
     server_api_key: str = os.getenv("SERVER_API_KEY", "default_secret_key")
 
 
+@dataclass(frozen=True)
+class StorageConfig:
+    temp_file_path: str = os.getenv("TEMP_FILE_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "temp"))
+    mcq_files_path: str = os.getenv("MCQ_FILES_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "mcq"))
+    aws_access_key: str = os.getenv("AWS_ACCESS_KEY", "")
+    aws_secret_key: str = os.getenv("AWS_SECRET_KEY", "")
+
+
 # Instantiate configuration objects
 llm_config = LLMConfig()
 api_config = APIConfig()
+storage_config = StorageConfig()
+
+# Ensure directories exist
+os.makedirs(storage_config.temp_file_path, exist_ok=True)
+os.makedirs(storage_config.mcq_files_path, exist_ok=True)

@@ -8,8 +8,12 @@ ENV PYTHONUNBUFFERED 1
 # Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies if needed (e.g., for specific libraries)
-# RUN apt-get update && apt-get install -y --no-install-recommends some-package && rm -rf /var/lib/apt/lists/*
+# Install Tesseract OCR and PDF processing dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tesseract-ocr \
+    libtesseract-dev \
+    poppler-utils \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt .

@@ -5,27 +5,24 @@ REPO="deployment-helper/agents"
 PROJECT_NUMBER="6"  # Use `gh project list` to find this number
 LABEL="Blogs"
 ORG="deployment-helper"
-titles=(  
-  "Memory Pruning in AI Agents: How to Keep the Important Stuff"
-  "How to Chain LLMs for Smarter Decision-Making and Suggestion Generation"
-  "RAG Systems with LangChain: Connecting Vector Search to Language Models"
-  "Optimizing Context Windows with RAG and Memory Graph Techniques"
-  "Using Embeddings to Build Semantic Recall in AI Agents"
-  "Advanced Prompt Engineering for Multi-Agent Orchestration"
-  "From Prompt to Action: Designing Language-Driven Workflows"
-  "Context Prioritization Strategies in LLM Chains"
+titles=(
+  "Integrating OpenAI GPT with WhatsApp Cloud API for Smart Conversations"
+  "Document-Aware GPT with Pinecone or Relevance AI (RAG on WhatsApp)"
+  "Per-User Memory in Chatbots: Secure, Contextual, and Deletable"
+  "Adding Voice to WhatsApp Bots with Whisper and Neural TTS"
+  "Containerizing AI-Powered Bots for Cloud or Serverless Deployment"
+  "From Prototype to Production: Testing, Docs & Handoff for AI Assistants"
 )
 
 descriptions=(
-  "- Techniques for pruning stale memory\n- Priority scoring and summarization\n- Keeping memory efficient for low-latency"
-  "- Combining agents with shared memory\n- Steps to build reasoning chains\n- Examples of summarization + synthesis"
-  "- Setting up vector stores\n- LangChain retrievers and pipelines\n- End-to-end RAG architecture"
-  "- Working with limited context window\n- Sliding window + chunking + vector compression\n- RAG optimization techniques"
-  "- What are embeddings?\n- How they power semantic memory\n- Use cases in real-time AI assistants"
-  "- Prompt templates for multi-agent use\n- Dynamic variable handling\n- Reflection & recursive improvement"
-  "- LLM as a flow controller\n- Triggering actions based on structured prompts\n- Examples from productivity AI"
-  "- Deciding what matters in large input data\n- Scoring, relevance, and fallback strategies\n- Reducing prompt overload"
+  "- WhatsApp Cloud API integration basics\n- Connecting user messages to OpenAI GPT\n- Webhook setup, media handling, and replies\n- Creating an intelligent WhatsApp assistant"
+  "- Using Pinecone/Relevance AI for vector search\n- Document upload and RAG-based GPT answers\n- Real-time document-aware chat experiences"
+  "- Per-user memory architecture\n- Handling GDPR-style 'delete-my-data' features\n- Scoping contextual memory (session, long-term)"
+  "- Whisper for transcription\n- Neural TTS for audio replies\n- Integrating with WhatsApp’s audio capabilities"
+  "- Dockerizing an AI chatbot app\n- Deployment on AWS Lambda, EC2, or Cloud Run\n- Secure configuration with secrets and HTTPS"
+  "- Testing async chatbots\n- Writing handoff documentation\n- Deliverables and deployment readiness checklist"
 )
+
 
 # Loop through titles and create issues 
 for i in "${!titles[@]}"; do
