@@ -9,7 +9,8 @@ class VideoHttpClient:
         desc: str,
         thumbnail_text: str,
         thumbnail_visual_desc: str,
-        quotes: list,
+        raw: list,
+        video_type: str,  # 'message' or 'mcq'
         project_id: str, # Add project_id parameter
     ) -> dict:
         """
@@ -29,7 +30,8 @@ class VideoHttpClient:
             "name": title,
             "description": desc,
             "visualPrompt": thumbnail_visual_desc,  # Rename to visual_prompt for the API
-            "sceneDescriptions": quotes,
+            "raw": raw,
+            "videoType": video_type,  # 'message' or 'mcq'
         }
         response = client.post(f"/videos/create-with-scenes?key={api_config.api_key}", payload)
         

@@ -32,7 +32,7 @@ class TestVideoHttpClient:
             desc=desc,
             thumbnail_text=thumbnail_text,
             thumbnail_visual_desc=thumbnail_visual_desc,
-            quotes=quotes,
+            raw=quotes,
             project_id=project_id
         )
         
@@ -92,7 +92,7 @@ class TestVideoHttpClient:
                 desc=desc,
                 thumbnail_text=thumbnail_text,
                 thumbnail_visual_desc=thumbnail_visual_desc,
-                quotes=quotes,
+                raw=quotes,
                 project_id=project_id
             )
             
