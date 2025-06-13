@@ -59,8 +59,8 @@ jobs:
             VIDEO_API_BASE_URL=VIDEO_API_BASE_URL:latest
             VIDEO_API_KEY=VIDEO_API_KEY:latest
             SERVER_API_KEY=SERVER_API_KEY:latest
-            AWS_ACCESS_KEY=AWS_ACCESS_KEY:latest
-            AWS_SECRET_KEY=AWS_SECRET_KEY:latest
+            AWS_ACCESS_KEY=AWS_ACCESS_KEY_ID:latest
+            AWS_SECRET_KEY=AWS_SECRET_ACCESS_KEY:latest
 
       # Optional: Output the deployed service URL
       - name: Show Deployed URL
