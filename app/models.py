@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 
 class MCQOption(BaseModel):
@@ -8,7 +8,7 @@ class MCQOption(BaseModel):
 class MCQQuestion(BaseModel):
     question: str
     questionDescription: str
-    options: List[MCQOption]
+    options: List[MCQOption] = Field(..., min_length=2, max_length=6, description="List of 2-6 multiple choice options")
     optionsDescription: str
     correctAnswer: str
     correctAnswerDescription: str
@@ -16,4 +16,5 @@ class MCQQuestion(BaseModel):
     explanationDescription: str
 
 class MCQList(BaseModel):
-    raw: List[MCQQuestion]
+    count: int = Field(..., ge=20, le=30, description="Number of MCQ questions to generate")
+    raw: List[MCQQuestion] = Field(..., min_length=20, max_length=30, description="List of 10-30 MCQ questions")

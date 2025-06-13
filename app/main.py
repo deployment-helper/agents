@@ -5,6 +5,7 @@ import logging
 
 from langgraph.types import Command
 from pydantic import BaseModel
+from typing import Literal
 
 from app.agents.quotes_video_agent import agent_executor
 from app.graphs.quotes_video_graph import graph
@@ -86,6 +87,12 @@ class MCQRequest(BaseModel):
     asset_files: list[str] = [] 
     user_prompt: str
 
+class ConversationRequest(BaseModel):
+    user_input: str
+    project_id: str
+    video_type: Literal['message','mcq']
+    context: dict = None
+
 @app.post("/graph", dependencies=[Depends(verify_api_key)]) # Add dependency here
 async def get_graph(request: GraphRequest):
     """
@@ -136,6 +143,29 @@ async def create_mcq(req: MCQRequest):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"MCQ generation failed: {str(e)}"
+        )
+
+@app.post("/conversation", dependencies=[Depends(verify_api_key)])
+async def conversation(req:ConversationRequest):
+    """
+    Handle conversation requests with the agent.
+    This endpoint processes user input and returns the agent's response.
+    
+    Args:
+        req (dict): Request containing user input and other parameters
+    
+    Returns:
+        dict: The agent's response
+    """
+    try:
+        logger.info("Processing conversation request")            
+        return req.user_input
+    
+    except Exception as e:
+        logger.error(f"Error in conversation processing: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Conversation processing failed: {str(e)}"
         )
 
 @app.on_event("startup")
